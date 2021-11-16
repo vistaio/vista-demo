@@ -1,6 +1,9 @@
 import React, { Fragment } from 'react';
 import PropTypes from 'prop-types';
 
+
+import withVista from 'shared/utils/vista';
+
 import api from 'shared/utils/api';
 import useApi from 'shared/hooks/api';
 import useCurrentUser from 'shared/hooks/currentUser';
@@ -70,7 +73,9 @@ const ProjectBoardIssueDetails = ({
             )}
           />
           <CopyLinkButton variant="empty" />
-          <Delete issue={issue} fetchProject={fetchProject} modalClose={modalClose} />
+          {withVista(currentUserId, 'delete', 'issues', '*', () => {
+            return (<Delete issue={issue} fetchProject={fetchProject} modalClose={modalClose} />);
+          })}
           <Button icon="close" iconSize={24} variant="empty" onClick={modalClose} />
         </TopActionsRight>
       </TopActions>

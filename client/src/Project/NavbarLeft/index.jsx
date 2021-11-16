@@ -7,6 +7,7 @@ import { removeStoredAuthToken, storeAuthToken } from 'shared/utils/authToken';
 import useCurrentUser from 'shared/hooks/currentUser';
 
 import { Icon, AboutTooltip } from 'shared/components';
+import withVista from 'shared/utils/vista';
 
 import { NavLeft, LogoLink, StyledLogo, Bottom, Item, ItemText } from './Styles';
 
@@ -14,25 +15,6 @@ const propTypes = {
   issueSearchModalOpen: PropTypes.func.isRequired,
   issueCreateModalOpen: PropTypes.func.isRequired,
 };
-
-const withVista = (userId, action, resourceType, resourceId, componentFn) => {
-  console.log(`userid: ${userId}`)
-  if (!userId) {
-    return (<React.Fragment />);
-  }
-  return (<VistaCheck
-    // how to generate 'read tokens' https://docs.govista.io/Guides/React%20Components/Authentication
-    read_tokens={{ access_token: '9ZL6LGqw2J27QrNbxE018dIM_a0iiuZOSq-BlyH4Kd1wfLVG' }}
-    hostname='http://localhost:8080'
-    user_id={userId}
-    action={action}
-    resource_type={resourceType}
-    resource_id={resourceId}
-    branch="test"
-    handleError={(err) => console.log(err)}>
-    {componentFn()}
-  </VistaCheck>);
-}
 
 const switchUser = async (userId, history) => {
   const { authToken } = await api.get(`/getToken/${userId}`);
@@ -57,10 +39,13 @@ const ProjectNavbarLeft = ({ issueSearchModalOpen, issueCreateModalOpen }) => {
         <ItemText>Search issues</ItemText>
       </Item>
 
-      <Item onClick={issueCreateModalOpen}>
-        <Icon type="plus" size={27} />
-        <ItemText>Create Issue</ItemText>
-      </Item>
+      {withVista(currentUserId, 'create', 'issues', '*', () => {
+        return (
+          <Item onClick={issueCreateModalOpen}>
+            <Icon type="plus" size={27} />
+            <ItemText>Create Issue</ItemText>
+          </Item>);
+      })}
 
       <Bottom>
         <Item onClick={() => switchUser(1, history)}>

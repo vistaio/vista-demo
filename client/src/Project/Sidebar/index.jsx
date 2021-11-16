@@ -2,6 +2,8 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { NavLink, useRouteMatch } from 'react-router-dom';
 
+import withVista from 'shared/utils/vista';
+
 import { ProjectCategoryCopy } from 'shared/constants/projects';
 import { Icon, ProjectAvatar } from 'shared/components';
 import useCurrentUser from 'shared/hooks/currentUser';
@@ -26,7 +28,7 @@ const propTypes = {
 const ProjectSidebar = ({ project }) => {
   const match = useRouteMatch();
 
-  const { currentUserId } = useCurrentUser({ cachePolicy: 'no-cache'});
+  const { currentUserId } = useCurrentUser({ cachePolicy: 'no-cache' });
 
   if (!currentUserId) {
     return null;
@@ -43,7 +45,7 @@ const ProjectSidebar = ({ project }) => {
       </ProjectInfo>
 
       {renderLinkItem(match, 'Kanban Board', 'board', '/board')}
-      {renderLinkItem(match, 'Project settings', 'settings', '/settings')}
+      {withVista(currentUserId, 'edit', 'projects', project.id, () => renderLinkItem(match, 'Project settings', 'settings', '/settings'))}
       <Divider />
       {renderLinkItem(match, 'Releases', 'shipping')}
       {renderLinkItem(match, 'Issues and filters', 'issues')}
